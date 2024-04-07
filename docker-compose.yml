@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  php:
+    build: .
+    container_name: symfony_php2
+    volumes:
+      - ./easyadmin_project:/var/www/html
+    ports:
+      - 8000:80
+    environment:
+      - DATABASE_URL=mysql://admin:foo@mysql:3306/db_easyadmin
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    container_name: symfony_mysql2
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=foo
+      - MYSQL_DATABASE=db_easyadmin
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=foo
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: symfony_phpmyadmin2
+    environment:
+      - PMA_HOST=mysql
+    ports:
+      - 8080:80
+    depends_on:
+      - mysql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+
+volumes:
+  db_data:
